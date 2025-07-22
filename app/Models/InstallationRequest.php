@@ -11,18 +11,28 @@ class InstallationRequest extends Model
 
     /**
      * The attributes that are mass assignable.
+     *
+     * Atribut yang boleh diisi secara massal.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
+        // Kolom yang diisi oleh User
         'user_id',
         'customer_name',
         'customer_address',
         'customer_phone',
         'city',
         'daily_energy_wh',
+
+        // --- KOLOM BARU YANG DIISI OLEH ADMIN ---
+        'status',
+        'recommended_panel_wp',
+        'admin_notes',
     ];
 
     /**
-     * Get the user that owns the request.
+     * Mendapatkan user yang memiliki permintaan ini.
      */
     public function user()
     {

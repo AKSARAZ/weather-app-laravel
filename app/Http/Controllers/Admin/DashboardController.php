@@ -42,6 +42,13 @@ class DashboardController extends Controller
      */
     public function update(Request $requestData, InstallationRequest $request)
     {
+        // --- TAMBAHKAN BLOK INI ---
+        // Ganti koma dengan titik untuk field yearly_psh sebelum validasi
+        $requestData->merge([
+            'yearly_psh' => str_replace(',', '.', $requestData->yearly_psh),
+        ]);
+        // --- AKHIR BLOK TAMBAHAN ---
+
         $validated = $requestData->validate([
             'yearly_psh' => 'required|numeric|min:1|max:8',
             'status' => 'required|string|in:Pending,Processed,Completed',

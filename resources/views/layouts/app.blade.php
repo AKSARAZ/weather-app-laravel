@@ -75,10 +75,13 @@
                         <i class="fa-solid fa-solar-panel w-5 text-center"></i>
                         <span>Simulasi Energi</span>
                     </a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100">
-                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
-                        <span>Riwayat Energi</span>
+
+                    <!-- PERUBAHAN DI SINI -->
+                    <a href="{{ route('requests.history') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('requests.history') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fa-solid fa-list-check w-5 text-center"></i>
+                        <span>Status Pemasangan</span>
                     </a>
+                    <!-- AKHIR PERUBAHAN -->
                 @endif
             @endauth
         </nav>

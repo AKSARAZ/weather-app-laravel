@@ -27,6 +27,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/request-installation', [RequestController::class, 'create'])->name('request.create');
     // Rute untuk MENYIMPAN data dari form
     Route::post('/request-installation', [RequestController::class, 'store'])->name('request.store');
+
+    // --- RUTE BARU UNTUK HALAMAN RIWAYAT/STATUS ---
+    Route::get('/my-requests', [RequestController::class, 'history'])->name('requests.history');
+
+    // --- RUTE BARU UNTUK EDIT & HAPUS ---
+    Route::get('/my-requests/{request}/edit', [RequestController::class, 'edit'])->name('requests.edit');
+    Route::put('/my-requests/{request}', [RequestController::class, 'update'])->name('requests.update');
+    Route::delete('/my-requests/{request}', [RequestController::class, 'destroy'])->name('requests.destroy');
 });
 
 // --- RUTE KHUSUS ADMIN ---
