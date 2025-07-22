@@ -13,6 +13,9 @@
     <!-- Font Awesome CDN for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 
+    <!-- Aset Bawaan Laravel Breeze (Penting untuk Dropdown) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -80,28 +83,30 @@
                     <i class="fa-solid fa-search text-gray-400 absolute top-1/2 left-4 -translate-y-1/2"></i>
                     <input type="text" placeholder="Cari sesuatu..." class="search-input w-full">
                 </div>
-                <!-- Pengganti untuk Ikon Profil -->
+
+                <!-- ====================================================== -->
+                <!-- MULAI BLOK DROPDOWN PROFIL (PENGGANTI IKON PROFIL LAMA) -->
+                <!-- ====================================================== -->
                 @auth
-                <div class="relative">
+                <div class="relative hidden sm:flex sm:items-center sm:ml-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                                 
-                                <!-- Ini adalah bagian yang menampilkan nama user -->
+                                <!-- Menampilkan Nama Pengguna -->
                                 <div class="font-semibold">{{ Auth::user()->name }}</div>
 
-                                <!-- Ini adalah ikon dropdown -->
+                                <!-- Ikon Panah Dropdown -->
                                 <div class="ml-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                     </svg>
-
                                 </div>
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
-                            <!-- Link ke Halaman Profil -->
+                            <!-- Link ke Halaman Edit Profil -->
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
@@ -119,6 +124,9 @@
                     </x-dropdown>
                 </div>
                 @endauth
+                <!-- ================================== -->
+                <!-- SELESAI BLOK DROPDOWN PROFIL -->
+                <!-- ================================== -->
             </header>
 
             <!-- Page Content -->
