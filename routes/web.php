@@ -1,21 +1,33 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\WeatherController; // Import controller
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController; // Controller baru kita
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+// Rute utama yang mengarahkan pengguna berdasarkan peran
+Route::get('/', function () {
+    if (!auth()->check()) return redirect()->route('login');
+    return auth()->user()->is_admin ? redirect()->route('admin.dashboard') : redirect()->route('dashboard');
+});
 
-// Route untuk menampilkan halaman utama dengan form pencarian
-Route::get('/', [WeatherController::class, 'index'])->name('weather.index');
+// Rute untuk pengguna yang sudah login
+Route::middleware('auth')->group(function () {
+    // Dashboard User (Simulasi)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Endpoint AJAX untuk mendapatkan data cuaca
+    Route::post('/get-weather', [DashboardController::class, 'getWeatherForSimulation'])->name('weather.get');
 
-// Route untuk memproses permintaan cuaca
-Route::post('/get-weather', [WeatherController::class, 'getWeather'])->name('weather.get');
+    // Rute Profil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Rute khusus Admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    // Rute lain untuk CRUD admin bisa ditambahkan di sini
+});
+
+require __DIR__.'/auth.php';

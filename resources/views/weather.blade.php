@@ -242,7 +242,7 @@
                 <i class="fas fa-cloud-sun header-icon-gradient drop-shadow-lg"></i>
             </div>
             <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
-                Penjelajah Cuaca
+                Pemantauan Cuaca
             </h1>
             <p class="text-white/70 text-lg">
                 Temukan kondisi cuaca di seluruh dunia
