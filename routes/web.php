@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController; // Controller baru kita
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\User\RequestController;
 
 // Rute utama yang mengarahkan pengguna berdasarkan peran
 Route::get('/', function () {
@@ -22,12 +23,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Rute untuk MENAMPILKAN halaman form
+    Route::get('/request-installation', [RequestController::class, 'create'])->name('request.create');
+    // Rute untuk MENYIMPAN data dari form
+    Route::post('/request-installation', [RequestController::class, 'store'])->name('request.store');
 });
 
-// Rute khusus Admin
+// --- RUTE KHUSUS ADMIN ---
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    // Rute lain untuk CRUD admin bisa ditambahkan di sini
+    // Rute BARU untuk halaman utama dashboard admin
+    Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
+    
+    // Rute resource untuk mengelola SEMUA request (CRUD)
+    Route::resource('requests', AdminDashboardController::class)->except(['create', 'store', 'show']);
 });
 
 require __DIR__.'/auth.php';

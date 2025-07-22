@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     simulationForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Ambil semua nilai dari form
+        // ... (bagian pengambilan nilai dan kalkulasi tetap sama) ...
         const homeLoadWh = parseFloat(document.getElementById('home_load_wh').value);
         const panelEfficiency = parseFloat(document.getElementById('panel_efficiency').value) / 100;
         const sunHoursPerDay = parseFloat(document.getElementById('sun_hours_per_day').value);
@@ -134,18 +134,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const panelWattagePerUnit = parseFloat(document.getElementById('panel_wattage_per_unit').value);
         const numberOfPanels = parseInt(document.getElementById('number_of_panels').value);
 
-        // Lakukan kalkulasi
         const installedPanelCapacityWp = numberOfPanels * panelWattagePerUnit;
         const totalSystemEfficiency = panelEfficiency * inverterEfficiency;
         const estimatedDailyEnergyWh = installedPanelCapacityWp * sunHoursPerDay * totalSystemEfficiency;
         const surplusDeficitWh = estimatedDailyEnergyWh - homeLoadWh;
         const isSufficient = surplusDeficitWh >= 0;
 
-        // Siapkan elemen untuk menampilkan hasil
         const resultsContainer = document.getElementById('simulation-results');
         resultsContainer.style.display = 'block';
 
-        // Bangun HTML untuk hasilnya
+        // --- PERUBAHAN DI SINI: MENAMBAHKAN TOMBOL BARU ---
         resultsContainer.innerHTML = `
             <h3 class="font-bold text-gray-700">Hasil Simulasi:</h3>
             <div class="mt-2 text-center p-3 rounded-lg font-semibold ${isSufficient ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
@@ -166,6 +164,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${Math.round(surplusDeficitWh)} Wh
                     </p>
                 </div>
+            </div>
+            
+            <!-- TOMBOL BARU DITAMBAHKAN DI SINI -->
+            <div class="mt-6">
+                <a href="{{ route('request.create') }}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all">
+                    Tertarik? Ajukan Pemasangan!
+                </a>
             </div>`;
     });
 });

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider; // Pastikan ini ada di atas
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,19 +28,27 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // --- LOGIKA BARU DIMULAI DI SINI ---
-        if (Auth::user()->is_admin) {
-            // Jika user adalah admin, arahkan ke dashboard admin
-            return redirect()->intended(route('admin.dashboard')); 
-        }
+        // =========================================================
+        // MULAI LOGIKA REDIRECT MULTI-ROLE (TANPA RouteServiceProvider)
+        // =========================================================
+        
+        $user = Auth::user();
 
+        if ($user->is_admin) {
+            // Jika user adalah admin, arahkan ke dashboard admin
+            return redirect()->intended(route('admin.dashboard'));
+        }
+        
         // Jika user biasa, arahkan ke dashboard user
-        return redirect()->intended(RouteServiceProvider::HOME);
-        // --- LOGIKA BARU SELESAI DI SINI ---
+        return redirect()->intended(route('dashboard'));
+
+        // ===================================
+        // SELESAI LOGIKA REDIRECT MULTI-ROLE
+        // ===================================
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destroy an incoming authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
     {

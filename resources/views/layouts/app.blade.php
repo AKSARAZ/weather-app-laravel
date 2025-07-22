@@ -53,20 +53,35 @@
                 <img src="{{ asset('assets/img/LOGO_IT_PLN.png') }}" alt="Logo ITPLN" class="h-10">
             </div>
 
-            <nav class="flex flex-col gap-4">
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-700 font-semibold bg-blue-100 text-blue-600 rounded-lg">
-                    <i class="fa-solid fa-solar-panel w-5 text-center"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">
-                    <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
-                    <span>Riwayat Energi</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">
-                    <i class="fa-solid fa-bars w-5 text-center"></i>
-                    <span>Menu Lainnya</span>
-                </a>
-            </nav>
+            <nav class="flex flex-col gap-2">
+            @auth
+                @if(auth()->user()->is_admin)
+                    <!-- ================= -->
+                    <!-- MENU UNTUK ADMIN -->
+                    <!-- ================= -->
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.dashboard') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fa-solid fa-house w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ route('admin.requests.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.requests.*') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fa-solid fa-table-list w-5 text-center"></i>
+                        <span>Daftar Request</span>
+                    </a>
+                @else
+                    <!-- ====================== -->
+                    <!-- MENU UNTUK USER BIASA -->
+                    <!-- ====================== -->
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fa-solid fa-solar-panel w-5 text-center"></i>
+                        <span>Simulasi Energi</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                        <span>Riwayat Energi</span>
+                    </a>
+                @endif
+            @endauth
+        </nav>
 
             <div class="mt-auto">
                 <a href="https://itpln.ac.id" target="_blank" class="text-xs text-gray-400 hover:text-blue-500">

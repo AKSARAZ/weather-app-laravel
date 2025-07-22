@@ -4,27 +4,25 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\InstallationRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Models\InstallationRequest; // <-- Import model
 
 class RequestController extends Controller
 {
-    public function dashboard()
-    {
-        // Ambil riwayat permintaan milik user yang sedang login
-        $myRequests = Auth::user()->installationRequests()->latest()->get();
-        return view('dashboard', compact('myRequests'));
-    }
-
+    /**
+     * Menampilkan halaman/form untuk membuat permintaan baru.
+     */
     public function create()
     {
-        // Kita perlu membuat file view untuk ini nanti
-        return view('user.requests.create'); 
+        return view('user.requests.create');
     }
 
+    /**
+     * Menyimpan permintaan baru ke database.
+     */
     public function store(Request $request)
     {
-        // Simpan hasil validasi ke dalam variabel
+        // Validasi semua input dari form
         $validatedData = $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_address' => 'required|string',
@@ -33,9 +31,10 @@ class RequestController extends Controller
             'daily_energy_wh' => 'required|integer|min:1',
         ]);
 
-        // Gunakan HANYA data yang sudah divalidasi
-        Auth::user()->installationRequests()->create($validatedData); 
+        // Buat entri baru yang terhubung dengan user yang sedang login
+        Auth::user()->installationRequests()->create($validatedData);
 
-        return redirect()->route('dashboard')->with('success', 'Permintaan instalasi Anda telah berhasil dikirim!');
+        // Arahkan kembali ke dashboard dengan pesan sukses
+        return redirect()->route('dashboard')->with('success', 'Permintaan instalasi Anda telah berhasil dikirim! Tim kami akan segera menindaklanjuti.');
     }
 }

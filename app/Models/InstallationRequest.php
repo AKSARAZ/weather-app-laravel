@@ -11,8 +11,6 @@ class InstallationRequest extends Model
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
      */
     protected $fillable = [
         'user_id',
@@ -21,9 +19,11 @@ class InstallationRequest extends Model
         'customer_phone',
         'city',
         'daily_energy_wh',
-        // 'status' tidak perlu di sini karena kita atur defaultnya
     ];
 
+    /**
+     * Get the user that owns the request.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
