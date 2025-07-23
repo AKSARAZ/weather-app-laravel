@@ -5,7 +5,10 @@
 @section('content')
     <div class="max-w-2xl mx-auto">
         <div class="card">
-            <p class="text-gray-600 mb-6">Anda dapat mengubah detail permintaan Anda di bawah ini selama statusnya masih "Pending".</p>
+            <div class="border-b pb-4 mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Edit Permintaan #{{ $request->id }}</h2>
+                <p class="text-gray-600 mt-1">Anda dapat mengubah detail permintaan Anda di bawah ini selama statusnya masih "Pending".</p>
+            </div>
 
             <form action="{{ route('requests.update', $request->id) }}" method="POST">
                 @csrf
@@ -18,7 +21,7 @@
                     </div>
                     <div>
                         <x-input-label for="customer_address" :value="__('Alamat Lengkap Pemasangan')" />
-                        <textarea name="customer_address" id="customer_address" rows="3" required class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('customer_address', $request->customer_address) }}</textarea>
+                        <textarea name="customer_address" id="customer_address" rows="3" required class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('customer_address', $request->customer_address) }}</textarea>
                         <x-input-error :messages="$errors->get('customer_address')" class="mt-2" />
                     </div>
                     <div>

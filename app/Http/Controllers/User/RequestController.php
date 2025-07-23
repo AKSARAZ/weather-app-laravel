@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\InstallationRequest; // <-- Import model
+use Carbon\Carbon;
 
 class RequestController extends Controller
 {
@@ -38,16 +39,41 @@ class RequestController extends Controller
         return redirect()->route('dashboard')->with('success', 'Permintaan instalasi Anda telah berhasil dikirim! Tim kami akan segera menindaklanjuti.');
     }
 
-    public function history()
+    /**
+     * Menampilkan halaman riwayat permintaan milik pengguna.
+     */
+    public function history(Request $request)
     {
-        // Ambil semua permintaan milik pengguna yang sedang login,
-        // urutkan dari yang terbaru, dan gunakan paginate.
-        $myRequests = Auth::user()
-                            ->installationRequests()
-                            ->latest()
-                            ->paginate(10);
+        $search = $request->input('search');
+        
+        // Mulai query HANYA dari permintaan milik user yang sedang login
+        $query = Auth::user()->installationRequests()->latest();
 
-        // Tampilkan view baru dan kirim data permintaan
+        // Jika ada input pencarian
+        if ($search) {
+            // Coba parsing input sebagai tanggal
+            try {
+                $searchDate = Carbon::parse($search)->toDateString();
+                // Jika berhasil, cari berdasarkan tanggal pembuatan
+                $query->whereDate('created_at', $searchDate);
+            } catch (\Exception $e) {
+                // ===================================
+                // PERBAIKAN UTAMA DI SINI
+                // ===================================
+                // Jika gagal (bukan tanggal), cari di NAMA atau KOTA
+                $query->where(function($q) use ($search) {
+                    $q->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%");
+                });
+                // ===================================
+                // AKHIR PERBAIKAN
+                // ===================================
+            }
+        }
+
+        // Eksekusi query dengan pagination
+        $myRequests = $query->paginate(10)->withQueryString();
+
         return view('user.requests.history', compact('myRequests'));
     }
 
@@ -83,6 +109,16 @@ class RequestController extends Controller
         $request->update($validatedData);
 
         return redirect()->route('requests.history')->with('success', 'Permintaan Anda berhasil diperbarui!');
+    }
+
+    public function show(InstallationRequest $request)
+    {
+        // Otorisasi: Pastikan user hanya bisa melihat permintaannya sendiri.
+        if ($request->user_id !== Auth::id()) {
+            abort(403, 'AKSI TIDAK DIIZINKAN');
+        }
+
+        return view('user.requests.show', compact('request'));
     }
 
     /**

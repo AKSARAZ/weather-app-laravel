@@ -3,7 +3,7 @@ import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    // --- TAMBAHKAN BARIS INI UNTUK MENONAKTIFKAN ---
+    // --- TAMBAHKAN BARIS INI UNTUK MEMATIKAN DARK MODE ---
     darkMode: false,
 
     content: [

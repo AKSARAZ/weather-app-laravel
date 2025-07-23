@@ -35,6 +35,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-requests/{request}/edit', [RequestController::class, 'edit'])->name('requests.edit');
     Route::put('/my-requests/{request}', [RequestController::class, 'update'])->name('requests.update');
     Route::delete('/my-requests/{request}', [RequestController::class, 'destroy'])->name('requests.destroy');
+    // --- RUTE UNTUK MENAMPILKAN HALAMAN DETAIL ---
+    Route::get('/my-requests/{request}', [RequestController::class, 'show'])->name('requests.show');    
 });
 
 // --- RUTE KHUSUS ADMIN ---
@@ -43,7 +45,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
     
     // Rute resource untuk mengelola SEMUA request (CRUD)
-    Route::resource('requests', AdminDashboardController::class)->except(['create', 'store', 'show']);
+    Route::resource('requests', AdminDashboardController::class);
 });
 
 require __DIR__.'/auth.php';

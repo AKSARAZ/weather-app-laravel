@@ -4,21 +4,46 @@
 
 @section('content')
     <div class="card">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6">
+        <!-- Header Card -->
+        <div class="flex flex-col sm:flex-row justify-between sm:items-start mb-6">
+            <!-- Judul dan Subjudul -->
             <div>
-                <h2 class="text-xl font-bold text-gray-800">Riwayat Permintaan</h2>
-                <p class="text-gray-600">Pantau status semua permintaan pemasangan PLTS Anda di sini.</p>
+                <h2 class="text-2xl font-bold text-gray-800">Riwayat Permintaan</h2>
+                <p class="text-gray-500 mt-1">Pantau status semua permintaan pemasangan PLTS Anda di sini. Klik pada salah satu permintaan untuk melihat detail lengkap.</p>
             </div>
 
-            <!-- TOMBOL KONDISIONAL: TAMBAH PENGAJUAN -->
-            @if($myRequests->isNotEmpty())
-                <div class="mt-4 sm:mt-0">
-                    <a href="{{ route('request.create') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all text-sm">
-                        <i class="fa-solid fa-plus mr-2"></i>Tambah Pengajuan Baru
+            <!-- Tombol Tambah Pengajuan -->
+            @if($myRequests->isNotEmpty() && !request('search'))
+                <div class="mt-4 sm:mt-0 sm:ml-4 flex-shrink-0">
+                    <a href="{{ route('request.create') }}" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all">
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        <span>Tambah Pengajuan Baru</span>
                     </a>
                 </div>
             @endif
         </div>
+
+        <!-- ==================================== -->
+        <!-- MULAI BLOK HASIL PENCARIAN -->
+        <!-- ==================================== -->
+        @if(request('search'))
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fa-solid fa-search mr-3"></i>
+                <span>
+                    Hasil pencarian untuk: <strong class="font-semibold">{{ request('search') }}</strong>
+                    <span class="text-gray-600">({{ $myRequests->total() }} hasil ditemukan)</span>
+                </span>
+            </div>
+            <a href="{{ route('requests.history') }}" class="flex items-center text-sm font-semibold border border-blue-500 text-blue-600 rounded-md px-3 py-1 hover:bg-blue-100">
+                <i class="fa-solid fa-times mr-2"></i>
+                Reset
+            </a>
+        </div>
+        @endif
+        <!-- ================================== -->
+        <!-- SELESAI BLOK HASIL PENCARIAN -->
+        <!-- ================================== -->
 
         @if(session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
@@ -26,10 +51,10 @@
             </div>
         @endif
 
-        <div class="space-y-4">
+        <div class="space-y-3">
             @forelse ($myRequests as $request)
-                <div class="border rounded-lg p-4 sm:p-6">
-                    <!-- ... (Konten detail permintaan tetap sama) ... -->
+                <!-- SETIAP ITEM ADALAH LINK KE HALAMAN DETAIL (requests.show) -->
+                <a href="{{ route('requests.show', $request->id) }}" class="block border rounded-lg p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-200">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center">
                         <div>
                             <p class="font-bold text-lg text-gray-800">Permintaan di {{ $request->city }}</p>
@@ -44,42 +69,29 @@
                             </span>
                         </div>
                     </div>
-                    @if($request->status != 'Pending')
-                    <div class="mt-4 border-t pt-4">
-                        <!-- ... (Konten detail rekomendasi admin tetap sama) ... -->
-                    </div>
-                    @endif
-
-                    <!-- ======================================================= -->
-                    <!-- BAGIAN BARU: TOMBOL AKSI KONDISIONAL (EDIT & HAPUS) -->
-                    <!-- ======================================================= -->
-                    @if($request->status == 'Pending')
-                    <div class="mt-4 border-t pt-4 flex items-center justify-end gap-3">
-                        <a href="{{ route('requests.edit', $request->id) }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">Edit</a>
-                        <form action="{{ route('requests.destroy', $request->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan permintaan ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-sm font-semibold text-red-600 hover:text-red-800">Batalkan</button>
-                        </form>
-                    </div>
-                    @endif
-                    <!-- ========================== -->
-                    <!-- AKHIR BAGIAN BARU -->
-                    <!-- ========================== -->
-                </div>
+                </a>
             @empty
-                <!-- KONDISI JIKA BELUM ADA REQUEST SAMA SEKALI -->
+                <!-- Tampilan jika tidak ada hasil pencarian ATAU tidak ada riwayat sama sekali -->
                 <div class="text-center py-16 border-dashed border-2 rounded-lg">
                     <i class="fa-solid fa-file-circle-question fa-3x text-gray-400 mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800">Anda Belum Memiliki Permintaan</h3>
-                    <p class="text-gray-500 mt-2">Mulai dengan mengajukan permintaan pemasangan PLTS pertama Anda.</p>
-                    <a href="{{ route('request.create') }}" class="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
-                        Buat Pengajuan Pemasangan
-                    </a>
+                    @if(request('search'))
+                        <h3 class="text-xl font-bold text-gray-800">Tidak Ada Hasil Ditemukan</h3>
+                        <p class="text-gray-500 mt-2">Tidak ada permintaan yang cocok dengan kata kunci "{{ request('search') }}".</p>
+                        <a href="{{ route('requests.history') }}" class="mt-6 inline-block text-blue-600 hover:underline font-semibold">
+                            Tampilkan Semua Riwayat
+                        </a>
+                    @else
+                        <h3 class="text-xl font-bold text-gray-800">Anda Belum Memiliki Permintaan</h3>
+                        <p class="text-gray-500 mt-2">Mulai dengan mengajukan permintaan pemasangan PLTS pertama Anda.</p>
+                        <a href="{{ route('request.create') }}" class="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                            Buat Pengajuan Pemasangan
+                        </a>
+                    @endif
                 </div>
             @endforelse
         </div>
 
+        <!-- Tampilkan link pagination jika data lebih dari 10 -->
         <div class="mt-6">
             {{ $myRequests->links() }}
         </div>

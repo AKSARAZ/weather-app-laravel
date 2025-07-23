@@ -97,10 +97,30 @@
         <main class="flex-1 flex flex-col">
             <!-- Header -->
             <header class="bg-white p-4 flex justify-between items-center border-b">
+                <!-- ======================================== -->
+                <!-- MULAI FORM PENCARIAN DINAMIS -->
+                <!-- ======================================== -->
                 <div class="relative w-1/3">
-                    <i class="fa-solid fa-search text-gray-400 absolute top-1/2 left-4 -translate-y-1/2"></i>
-                    <input type="text" placeholder="Cari sesuatu..." class="search-input w-full">
+                    <form 
+                        @if(Auth::check() && Auth::user()->is_admin)
+                            action="{{ route('admin.requests.index') }}"
+                        @else
+                            action="{{ route('requests.history') }}"
+                        @endif
+                        method="GET">
+                        
+                        <i class="fa-solid fa-search text-gray-400 absolute top-1/2 left-4 -translate-y-1/2"></i>
+                        <input 
+                            type="text" 
+                            name="search" 
+                            value="{{ request('search') }}"
+                            placeholder="Cari berdasarkan nama atau kota..." 
+                            class="w-full bg-gray-100 border-gray-200 rounded-lg py-2 pl-10 text-sm">
+                    </form>
                 </div>
+                <!-- ====================== -->
+                <!-- AKHIR FORM PENCARIAN -->
+                <!-- ====================== -->
 
                 <!-- ====================================================== -->
                 <!-- MULAI BLOK DROPDOWN PROFIL (PENGGANTI IKON PROFIL LAMA) -->

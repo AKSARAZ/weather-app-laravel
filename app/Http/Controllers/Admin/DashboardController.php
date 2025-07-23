@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\InstallationRequest;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -19,12 +20,27 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact('latestRequests'));
     }
 
-    /**
-     * Menampilkan daftar SEMUA permintaan instalasi (halaman "Daftar Request").
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $allRequests = InstallationRequest::with('user')->latest()->paginate(10); // Paginate 10 per halaman
+        $search = $request->input('search');
+        $query = InstallationRequest::with('user')->latest();
+
+        if ($search) {
+            // Coba parsing input sebagai tanggal
+            try {
+                $searchDate = Carbon::parse($search)->toDateString();
+                // Jika berhasil, cari berdasarkan tanggal pembuatan
+                $query->whereDate('created_at', $searchDate);
+            } catch (\Exception $e) {
+                // Jika gagal (berarti bukan format tanggal), cari di nama atau kota
+                $query->where(function($q) use ($search) {
+                    $q->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%");
+                });
+            }
+        }
+
+        $allRequests = $query->paginate(10)->withQueryString(); // withQueryString() lebih modern dari appends()
 
         return view('admin.requests.index', compact('allRequests'));
     }
@@ -68,5 +84,28 @@ class DashboardController extends Controller
         ]);
 
         return redirect()->route('admin.requests.index')->with('success', 'Permintaan berhasil diperbarui!');
+    }
+    /**
+     * Menampilkan detail lengkap dari sebuah permintaan.
+     */
+    public function show(InstallationRequest $request)
+    {
+        // Cukup tampilkan view dan kirim data request yang dipilih
+        return view('admin.requests.show', compact('request'));
+    }
+
+    /**
+     * Menghapus data permintaan dari database.
+     */
+    public function destroy(InstallationRequest $request)
+    {
+        // KONDISI: Hanya bisa menghapus jika statusnya 'Completed'
+        if ($request->status !== 'Completed') {
+            return back()->with('error', 'Hanya permintaan dengan status "Completed" yang dapat dihapus.');
+        }
+
+        $request->delete();
+
+        return redirect()->route('admin.requests.index')->with('success', 'Data permintaan berhasil dihapus.');
     }
 }
