@@ -4,16 +4,29 @@
 
 @section('content')
     <div class="card">
-        <!-- ==================================== -->
-        <!-- MULAI BLOK HASIL PENCARIAN BARU -->
-        <!-- ==================================== -->
-        @if(request('search'))
+        <!-- ====================================================== -->
+        <!-- TEMPELKAN BLOK KODE UNTUK ADMIN DI SINI -->
+        <!-- ====================================================== -->
+        @if(request('search') || request('search_date'))
         <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-6 flex justify-between items-center">
             <div class="flex items-center">
                 <i class="fa-solid fa-search mr-3"></i>
                 <span>
-                    Hasil pencarian untuk: <strong class="font-semibold">{{ request('search') }}</strong>
-                    <span class="text-gray-600">({{ $allRequests->total() }} hasil ditemukan)</span>
+                    Hasil pencarian untuk
+                    
+                    @if(request('search'))
+                        <strong class="font-semibold">"{{ request('search') }}"</strong>
+                    @endif
+
+                    @if(request('search') && request('search_date'))
+                        <span class="text-gray-600 mx-1">dan</span>
+                    @endif
+                    
+                    @if(request('search_date'))
+                        tanggal <strong class="font-semibold">{{ \Carbon\Carbon::parse(request('search_date'))->format('d F Y') }}</strong>
+                    @endif
+
+                    <span class="text-gray-600 ml-2">({{ $allRequests->total() }} hasil ditemukan)</span>
                 </span>
             </div>
             <a href="{{ route('admin.requests.index') }}" class="flex items-center text-sm font-semibold border border-blue-500 text-blue-600 rounded-md px-3 py-1 hover:bg-blue-100">
@@ -22,12 +35,14 @@
             </a>
         </div>
         @endif
-        <!-- ================================== -->
-        <!-- SELESAI BLOK HASIL PENCARIAN -->
-        <!-- ================================== -->
+        <!-- ====================================================== -->
+        <!-- AKHIR BLOK -->
+        <!-- ====================================================== -->
         
         @if(session('success'))
-            <!-- ... (pesan sukses Anda) ... -->
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                <p>{{ session('success') }}</p>
+            </div>
         @endif
 
         <!-- ... (sisa kode tabel Anda) ... -->

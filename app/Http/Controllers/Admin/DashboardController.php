@@ -23,24 +23,26 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $searchDate = $request->input('search_date');
+        
         $query = InstallationRequest::with('user')->latest();
 
+        // JIKA ADA INPUT PENCARIAN TEKS
         if ($search) {
-            // Coba parsing input sebagai tanggal
-            try {
-                $searchDate = Carbon::parse($search)->toDateString();
-                // Jika berhasil, cari berdasarkan tanggal pembuatan
-                $query->whereDate('created_at', $searchDate);
-            } catch (\Exception $e) {
-                // Jika gagal (berarti bukan format tanggal), cari di nama atau kota
-                $query->where(function($q) use ($search) {
-                    $q->where('customer_name', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%");
-                });
-            }
+            $query->where(function($q) use ($search) {
+                $q->where('customer_name', 'like', "%{$search}%")
+                ->orWhere('city', 'like', "%{$search}%");
+            });
         }
 
-        $allRequests = $query->paginate(10)->withQueryString(); // withQueryString() lebih modern dari appends()
+        // JIKA ADA INPUT TANGGAL
+        if ($searchDate) {
+            // Tambahkan kondisi 'whereDate' ke query yang sudah ada
+            $query->whereDate('created_at', $searchDate);
+        }
+
+        // Eksekusi query dengan SEMUA kondisi yang terkumpul
+        $allRequests = $query->paginate(10)->withQueryString();
 
         return view('admin.requests.index', compact('allRequests'));
     }

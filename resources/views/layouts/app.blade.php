@@ -98,24 +98,40 @@
             <!-- Header -->
             <header class="bg-white p-4 flex justify-between items-center border-b">
                 <!-- ======================================== -->
-                <!-- MULAI FORM PENCARIAN DINAMIS -->
+                <!-- MULAI FORM PENCARIAN BARU -->
                 <!-- ======================================== -->
-                <div class="relative w-1/3">
+                <div class="relative w-2/3 md:w-1/2">
                     <form 
                         @if(Auth::check() && Auth::user()->is_admin)
                             action="{{ route('admin.requests.index') }}"
                         @else
                             action="{{ route('requests.history') }}"
                         @endif
-                        method="GET">
+                        method="GET" class="flex items-center gap-2">
                         
-                        <i class="fa-solid fa-search text-gray-400 absolute top-1/2 left-4 -translate-y-1/2"></i>
-                        <input 
-                            type="text" 
-                            name="search" 
-                            value="{{ request('search') }}"
-                            placeholder="Cari berdasarkan nama atau kota..." 
-                            class="w-full bg-gray-100 border-gray-200 rounded-lg py-2 pl-10 text-sm">
+                        <!-- Input Teks -->
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-search text-gray-400 absolute top-1/2 left-4 -translate-y-1/2"></i>
+                            <input 
+                                type="text" 
+                                name="search" 
+                                value="{{ request('search') }}"
+                                placeholder="Cari nama/kota..." 
+                                class="w-full bg-gray-100 border-gray-200 rounded-lg py-2 pl-10 text-sm">
+                        </div>
+
+                        <!-- Input Tanggal BARU -->
+                        <div class="relative">
+                            <input 
+                                type="date" 
+                                name="search_date" 
+                                value="{{ request('search_date') }}"
+                                class="w-full bg-gray-100 border-gray-200 rounded-lg py-2 px-3 text-sm">
+                        </div>
+                        
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 text-sm">
+                            Cari
+                        </button>
                     </form>
                 </div>
                 <!-- ====================== -->

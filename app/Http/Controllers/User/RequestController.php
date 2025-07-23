@@ -45,33 +45,26 @@ class RequestController extends Controller
     public function history(Request $request)
     {
         $search = $request->input('search');
+        $searchDate = $request->input('search_date');
         
         // Mulai query HANYA dari permintaan milik user yang sedang login
         $query = Auth::user()->installationRequests()->latest();
 
-        // Jika ada input pencarian
+        // JIKA ADA INPUT PENCARIAN TEKS
         if ($search) {
-            // Coba parsing input sebagai tanggal
-            try {
-                $searchDate = Carbon::parse($search)->toDateString();
-                // Jika berhasil, cari berdasarkan tanggal pembuatan
-                $query->whereDate('created_at', $searchDate);
-            } catch (\Exception $e) {
-                // ===================================
-                // PERBAIKAN UTAMA DI SINI
-                // ===================================
-                // Jika gagal (bukan tanggal), cari di NAMA atau KOTA
-                $query->where(function($q) use ($search) {
-                    $q->where('customer_name', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%");
-                });
-                // ===================================
-                // AKHIR PERBAIKAN
-                // ===================================
-            }
+            $query->where(function($q) use ($search) {
+                $q->where('customer_name', 'like', "%{$search}%")
+                ->orWhere('city', 'like', "%{$search}%");
+            });
         }
 
-        // Eksekusi query dengan pagination
+        // JIKA ADA INPUT TANGGAL
+        if ($searchDate) {
+            // Tambahkan kondisi 'whereDate'
+            $query->whereDate('created_at', $searchDate);
+        }
+
+        // Eksekusi query dengan SEMUA kondisi yang terkumpul
         $myRequests = $query->paginate(10)->withQueryString();
 
         return view('user.requests.history', compact('myRequests'));
